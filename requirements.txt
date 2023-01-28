@@ -1,0 +1,4 @@
+arabic_reshaper==3.0.0
+Kivy==2.0.0
+kivymd==0.104.2
+python_bidi==0.4.2

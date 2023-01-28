@@ -1,0 +1,92 @@
+#:kivy 1.0
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import get_media_path MainApp.get_media_path
+#:import Clock kivy.clock
+
+# Menu item in the DrawerList list.
+<ItemDrawer>:
+    on_release: self.parent.set_color_item(self)
+
+<ContentNavigationDrawer@BoxLayout>:
+    orientation: "vertical"
+    padding: dp(20), dp(50)
+    spacing: "20dp"
+
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        size_hint_y: None
+        height: avatar.height
+
+        Image:
+            id: avatar
+            size_hint: None, None
+            size: "56dp", "56dp"
+            source: get_media_path('media/icon.png')
+
+    MDLabel:
+        # text: "Virtual Chemsitry Lab"
+        text: app.get_corrected_text("مختبر الكيمياء اﻹفتراضي")
+        font_name: 'font/arial.ttf'
+        halign: "right"
+        # font_style: "Caption"
+        adaptive_height: True
+
+    MDLabel:
+        # text: "Available Experiments are:"
+        text: app.get_corrected_text("التجارب المتوفرة هي:")
+        font_name: 'font/arial.ttf'
+        halign: "right"
+        # font_style: "Caption"
+        adaptive_height: True
+
+    RecycleView:
+
+        DrawerList:
+            id: md_list
+
+            ItemDrawer:
+                # text: "Experiment #1"
+                font_name: 'font/arial.ttf'
+                # text: app.get_corrected_text("التجربة 1")
+                text: f"[font={self.font_name}]{app.get_corrected_text('إستخلاص النحاس')}[/font]"
+                # halign: "right"
+                text_color: app.theme_cls.primary_light
+                on_release:
+                    app.switch_screen(*args, 'experiment1');
+            
+            ItemDrawer:
+                # text: "Experiment #2"
+                font_name: 'font/arial.ttf'
+                # text: app.get_corrected_text("التجربة 2")
+                text: f"[font={self.font_name}]{app.get_corrected_text('التجربة 2')}[/font]"
+                # icon: "laser-pointer"
+                text_color: app.theme_cls.primary_light
+                on_release:
+                    app.switch_screen(*args, 'experiment2');
+
+#  Main screen is defined here:
+MDScreen:
+    
+    MDNavigationLayout:
+        
+        ScreenManager:
+            id: sm
+         
+        MDNavigationDrawer:
+            id: nav_drawer
+            anchor: "right"
+            ContentNavigationDrawer:
+                id: content_drawer
+
+    MDToolbar:
+        pos_hint: {'top':1.0}
+        size_hint: [1,0.04]
+        # title: "Virtual Chemsitry Lab"
+        font_name: 'font/arial.ttf'
+        # title: f"[font={self.font_name}]{app.get_corrected_text('مختبر الكيمياء اﻹفتراضي')}[/font]"
+        elevation: 5
+        md_bg_color: [30/255,30/255,30/255,1]
+        specific_text_color: app.theme_cls.primary_light
+        right_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
+        

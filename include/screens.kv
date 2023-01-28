@@ -1,0 +1,84 @@
+#:kivy 1.0
+
+<DragImage>:
+    # Define the properties for the DragLabel
+    drag_rectangle: self.x, self.y, self.width, self.height
+    drag_timeout: 10000000
+    drag_distance: 0
+
+<CopperExperiment>:
+
+<Experiment1>:
+    name: 'experiment1'
+
+    CopperExperiment:
+        size_hint: (0.80,0.90)
+        pos_hint: {'center_x':0.5, 'center_y':0.47}
+        id: copper_exp
+        FloatLayout:
+            size: self.parent.size
+            pos: self.parent.pos
+            Image:
+                id: burner
+                source: "./media/Burner.png"
+                pos_hint: {'center_x':0.5, 'y':0 }
+                pos_y: self.parent.y
+                size_hint_x: None
+                size_hint_y: None
+                size: self.texture_size[0]//2, self.texture_size[1]//2
+
+                Image:
+                    id: flame_object
+                    source: "./media/Flame.png"
+                    # pos_y: burner.top
+                    # pos_x: burner.x - self.width/2
+                    pos: burner.center_x - self.width/2, burner.top + 12
+                    size_hint_x: None
+                    size_hint_y: None
+                    # # size: self.texture_size[0] // 2, self.texture_size[1] // 2
+                    # opacity: int(copper_exp.burner_on)
+                    opacity: 0
+                    canvas.before:
+                        Color:
+                            rgba: copper_exp.flame_color
+                        RoundedRectangle:
+                            # This creates the flame effect for the burner
+                            size: self.parent.size[0]//3 + 2, self.parent.size[1]//3 + 4
+                            pos: self.parent.center_x - self.parent.size[0]//6 - 1, burner.top
+                            # top-left, top-right, bottom-left, bottom-right 
+                            # corners can be rounded as needed as such:
+                            radius: [0, 0, 50, 50]
+                    
+            DragImage:
+                # size_hint: 0.25, 0.2
+                id: test_tube
+                source: "./media/TestTube.png"
+                # size: 250, 250
+                size_hint_x: None
+                size_hint_y: None
+                # size: 250, 250
+                size: self.texture_size[0]//2, self.texture_size[1]//2
+                canvas.before:
+                    Color:
+                        rgba: copper_exp.oxide_color
+                    RoundedRectangle:
+                        # This creates the Copper deposit effect in the test tube
+                        size: test_tube.size[0]//2 + 1, test_tube.size[1]//3
+                        pos: test_tube.center[0] - test_tube.size[0]//4 - 2, test_tube.y
+                        # top-left, top-right, bottom-left, bottom-right 
+                        # corners can be rounded as needed as such:
+                        radius: [0, 0, 50, 50]
+        
+        BasicToggleButton:
+            font_name: 'font/arial.ttf'
+            text: app.get_corrected_text("أشعل الموقد") if self.state =="normal" else app.get_corrected_text("أطفئ الموقد")
+            font_size: dp(30)
+            on_release: copper_exp.burner_on = 0 if self.state =="normal" else 1
+
+<Experiment2>:
+    name: 'experiment2'
+    
+    Label:
+        text: app.get_corrected_text("محتوى مؤقت 2")
+        size: self.texture_size
+        font_name: 'font/arial.ttf'
