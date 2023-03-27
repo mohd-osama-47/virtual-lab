@@ -11,6 +11,7 @@ from kivy.uix.widget import Widget
 from kivy.config import Config
 from kivy.uix.image import Image
 from kivy.uix.behaviors import DragBehavior
+from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
 
 SCREEN_RES = [960, 540]    # Set your desired screen size here please
@@ -182,9 +183,6 @@ class IonsExperiment(Widget):
         # the varibale changes.
         self.bind(start_animation=self.anim_reaction)
         self.bind(current_on=self.anime_current)
-        # Helper function that gets called 20 times a second to check for collision between the flame and the test tube.
-        #! You can change the rate from 1/20 to something lower if performance is important for you
-        # Clock.schedule_interval(self.check_flame_collision, 1/20.)
     
     def anime_current(self, *args):
         '''
@@ -208,31 +206,14 @@ class IonsExperiment(Widget):
         if self.start_animation:
             # means that the current flow is now ON
             # start animation that changes colors
-            Animation(cu_ions_color=self.cu2_color, step = 1/10).start(self)
-            Animation(mno_ions_color=self.mno4_color, step = 1/10).start(self)
+            Animation(cu_ions_color=self.cu2_color, step = 1/60).start(self)
+            Animation(mno_ions_color=self.mno4_color, step = 1/60).start(self)
         else:
             # means current is now OFF
             # start animation that changes color BACK to default
-            Animation(cu_ions_color=self.def_color, step = 1/10).start(self)
-            Animation(mno_ions_color=self.def_color, step = 1/10).start(self)
+            Animation(cu_ions_color=self.def_color, step = 1/60).start(self)
+            Animation(mno_ions_color=self.def_color, step = 1/60).start(self)
     
-    def check_flame_collision(self, *args):
-        if not self.burner_on:
-            # Means the button for the burner is not 
-            # enabled, so do not trigger any animation
-            self.start_animation = False
-            return
-
-        # Check if the tube object defined in the KV file is colliding with the flame object of the bunsen burner.
-        collision = self.parent.ids.test_tube.collide_widget(self.parent.ids.flame_object)
-
-        if collision:
-            # self.oxide_color = self.blue
-            self.start_animation = True
-        else:
-            # self.oxide_color = self.brown
-            self.start_animation = False
-
 class ParticleMesh(Widget):
     '''
     Class definition responsible for generating the animated particle effect in the background
@@ -262,41 +243,25 @@ class ParticleMesh(Widget):
         self.direction = []
         self.point_number = self.point_count
         # print(f'1:{self.width}, {self.height}')
-        Clock.schedule_once(lambda dt: self.plot_points(), 0)
+        # print(f'2:{self.pos}, {self.y}')
 
     def plot_points(self):
         '''
         Generates all the points in the background and starts a Clock event for updating their positions.
         '''
+        print(f'1:{self.width}, {self.height}')
+        print(f'2:{self.x}, {self.y}')
         for _ in range(self.point_number):
             #! Issue with getting screen size if you have other 
             #! Fixed with putting the screenmanager in a floatlayout
-            # x = randint(0, self.width)
-            # y = randint(0, self.height)
-            x = randint(0, SCREEN_RES[0])
-            y = randint(0, SCREEN_RES[1])
+            x = randint(self.x+35, self.width+self.x - 35)
+            y = randint(self.y+35, self.height+self.y - 35)
+            # x = randint(0, SCREEN_RES[0])
+            # y = randint(0, SCREEN_RES[1])
             self.points.extend([x, y])
             self.direction.append(randint(0, 359))
         # print('THE PARTICLE EFFECT LIST IS:', self.points)
         Clock.schedule_interval(self.update_positions, 1/30)
-        
-
-    def draw_lines(self):
-        '''
-        Draws all the lines and colours them according to how close the points at the tail ends of the line are.
-        '''
-        self.canvas.after.clear()
-        with self.canvas.after:
-            for i in range(0, len(self.points), 2):
-                for j in range(i + 2, len(self.points), 2):
-
-                    d = self.distance_between_points(self.points[i], self.points[i + 1], self.points[j],
-                                                     self.points[j + 1])
-                    if d > 200:
-                        continue
-                    color = 1 - d / 200
-                    Color(rgba=[self.line_color[0]*color, self.line_color[1]*color, self.line_color[2]*color, 0.2])
-                    Line(points=[self.points[i], self.points[i + 1], self.points[j], self.points[j + 1]], width = 3 * color)
     
     def update_positions(self, *args):
         '''
@@ -311,20 +276,17 @@ class ParticleMesh(Widget):
                 if self.off_screen(self.points[i], self.points[i + 1]):
                     self.direction[j] = 90 + self.direction[j]
             else:
-                theta = self.home_pos
-                self.points[i] += 2 * step * cos(theta)
-                self.points[i + 1] += 2 * step * sin(theta)
+                if not self.off_screen(self.points[i], self.points[i + 1]):
+                    theta = self.home_pos
+                    # theta = self.direction[j] + 180
+                    self.points[i] += 2 * step * cos(theta)
+                    # self.points[i + 1] += 2 * step * sin(theta)
+                    # self.direction[j] = 90 + self.direction[j]
                 if self.off_screen(self.points[i], self.points[i + 1]):
-                    self.direction[j] = 90 + self.direction[j]
-
-        self.draw_lines()
-
-    @staticmethod
-    def distance_between_points(x1, y1, x2, y2):
-        return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+                    self.direction[j] = 90 * cos(self.home_pos) + self.home_pos
 
     def off_screen(self, x, y):
-        return x < -5 or x > self.width + 5 or y < -5 or y > self.height + 5
+        return x < self.x + 10 or x > self.width + self.x - 10 or y < self.y + 10 or y > self.height + self.y - 10
 class DragImage(DragBehavior, Image):
     pass
 
@@ -358,7 +320,10 @@ class GUIApp(MDApp):
         
         self.sm = self.screen.ids.sm
         self.sm.add_widget(Experiment1())
-        self.sm.add_widget(Experiment2())
+        exp2 = Experiment2()
+        Clock.schedule_once(lambda dt: exp2.ids.cu_ions.plot_points(), 0)
+        Clock.schedule_once(lambda dt: exp2.ids.mno_ions.plot_points(), 0)
+        self.sm.add_widget(exp2)
 
         self.experiment1 = self.screen.ids.sm.get_screen('experiment1')
         self.screen_dict["experiment1"] = self.experiment1

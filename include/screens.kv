@@ -82,9 +82,6 @@
         size_hint: (0.80,0.90)
         pos_hint: {'center_x':0.5, 'center_y':0.47}
         id: ions_exp
-        FloatLayout:
-            size: self.parent.size
-            pos: self.parent.pos
             # Image:
             #     id: liquid_container
             #     source: "./media/Burner.png"
@@ -103,38 +100,78 @@
             #             # top-left, top-right, bottom-left, bottom-right 
             #             # corners can be rounded as needed as such:
             #             radius: [0, 0, 50, 50]
+        # FloatLayout:
+        #     size: self.parent.size
+        #     pos: self.parent.pos
+        Image:
+            id: liquid_container
+            source: "./media/GlassContainer.png"
+            pos_y: self.parent.y
+            size_hint_x: None
+            size_hint_y: None
+            size: self.texture_size[0], self.texture_size[1]
+            id: ion_root
+            # canvas.before:
+            #     Color:
+            #         rgba: 1,0,0,0.2
+            #     Rectangle:
+            #         size: self.size
+            #         pos: self.pos
             ParticleMesh:
                 # size_hint: [[1,1],[0,0]][app.hiding_parameter]
+                # size: self.parent.size
+                # pos: self.parent.pos
+                size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
+                pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
                 id: cu_ions
                 opacity: 1
                 line_color: [0, 0, 0, 0]
-                point_number: 30
+                point_number: 10
                 move_to_pos: ions_exp.current_on
-                home_pos: 0
+                home_pos: 180
+                # canvas.before:
+                #     Color:
+                #         rgba: 1,0,1,0.2
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
                 canvas:
                     Color:
                         rgba: ions_exp.cu_ions_color
                     Point:
                         points: self.points
-                        pointsize: 5
+                        pointsize: 20
+                    
             
             ParticleMesh:
                 # size_hint: [[1,1],[0,0]][app.hiding_parameter]
+                # size: self.parent.size
+                # pos: self.parent.pos
+                # size: self.parent.size  # important!
+                size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
+                pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
                 id: mno_ions
                 opacity: 1
                 line_color: [0, 0, 0, 0]
-                point_number: 30
+                point_number: 10
                 move_to_pos: ions_exp.current_on
-                home_pos: 180
+                home_pos: 0
+                # canvas.before:
+                #     Color:
+                #         rgba: 1,1,0,0.2
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
                 canvas:
                     Color:
                         rgba: ions_exp.mno_ions_color
                     Point:
                         points: self.points
-                        pointsize: 5
+                        pointsize: 20
         
-        BasicToggleButton:
-            font_name: 'font/arial.ttf'
-            text: app.get_corrected_text("أغلق الدائرة") if self.state =="normal" else app.get_corrected_text("إفتح الدائرة")
-            font_size: dp(30)
-            on_release: ions_exp.current_on = 0 if self.state =="normal" else 1
+    BasicToggleButton:
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("أغلق الدائرة") if self.state =="normal" else app.get_corrected_text("إفتح الدائرة")
+        font_size: dp(30)
+        on_release: ions_exp.current_on = 0 if self.state =="normal" else 1
+        pos_x: self.parent.x + 0.7 * self.parent.width
