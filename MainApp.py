@@ -206,13 +206,13 @@ class IonsExperiment(Widget):
         if self.start_animation:
             # means that the current flow is now ON
             # start animation that changes colors
-            Animation(cu_ions_color=self.cu2_color, step = 1/60).start(self)
-            Animation(mno_ions_color=self.mno4_color, step = 1/60).start(self)
+            Animation(cu_ions_color=self.cu2_color, step = 1/10).start(self)
+            Animation(mno_ions_color=self.mno4_color, step = 1/10).start(self)
         else:
             # means current is now OFF
             # start animation that changes color BACK to default
-            Animation(cu_ions_color=self.def_color, step = 1/60).start(self)
-            Animation(mno_ions_color=self.def_color, step = 1/60).start(self)
+            Animation(cu_ions_color=self.def_color, step = 1/30).start(self)
+            Animation(mno_ions_color=self.def_color, step = 1/30).start(self)
     
 class ParticleMesh(Widget):
     '''
@@ -242,6 +242,7 @@ class ParticleMesh(Widget):
         super().__init__(**kwargs)
         self.direction = []
         self.point_number = self.point_count
+        self.bind(move_to_pos=self.anime_particles)
         # print(f'1:{self.width}, {self.height}')
         # print(f'2:{self.pos}, {self.y}')
 
@@ -249,6 +250,8 @@ class ParticleMesh(Widget):
         '''
         Generates all the points in the background and starts a Clock event for updating their positions.
         '''
+        self.points = []
+        self.direction = []
         print(f'1:{self.width}, {self.height}')
         print(f'2:{self.x}, {self.y}')
         for _ in range(self.point_number):
@@ -261,7 +264,16 @@ class ParticleMesh(Widget):
             self.points.extend([x, y])
             self.direction.append(randint(0, 359))
         # print('THE PARTICLE EFFECT LIST IS:', self.points)
-        Clock.schedule_interval(self.update_positions, 1/30)
+        self.move_event = Clock.schedule_interval(self.update_positions, 1/30)
+    
+    def anime_particles(self, *args):
+        if self.move_to_pos:
+            self.move_event.cancel()
+            self.move_event = Clock.schedule_interval(self.update_positions2, 1/30)
+        else:
+            self.move_event.cancel()
+            Clock.schedule_once(lambda dt: self.plot_points(), 0)
+            # self.move_event = Clock.schedule_interval(self.update_positions, 1/30)
     
     def update_positions(self, *args):
         '''
@@ -269,24 +281,29 @@ class ParticleMesh(Widget):
         '''
         step = 0.6
         for i, j in zip(range(0, len(self.points), 2), range(len(self.direction))):
-            if not self.move_to_pos:
-                theta = self.direction[j]
-                self.points[i] += step * cos(theta)
-                self.points[i + 1] += step * sin(theta)
-                if self.off_screen(self.points[i], self.points[i + 1]):
-                    self.direction[j] = 90 + self.direction[j]
-            else:
-                if not self.off_screen(self.points[i], self.points[i + 1]):
-                    theta = self.home_pos
-                    # theta = self.direction[j] + 180
-                    self.points[i] += 2 * step * cos(theta)
-                    # self.points[i + 1] += 2 * step * sin(theta)
-                    # self.direction[j] = 90 + self.direction[j]
-                if self.off_screen(self.points[i], self.points[i + 1]):
-                    self.direction[j] = 90 * cos(self.home_pos) + self.home_pos
+            theta = self.direction[j]
+            self.points[i] += 3 * step * cos(theta)
+            self.points[i + 1] += 3 * step * sin(theta)
+            if self.off_screen(self.points[i], self.points[i + 1]):
+                self.direction[j] = -90 + self.direction[j]
+
+    def update_positions2(self, *args):
+        step = 0.6
+        for i, j in zip(range(0, len(self.points), 2), range(len(self.direction))):
+            if not self.off_screen2(self.points[i], self.points[i + 1]):
+                theta = self.home_pos
+                # theta = self.direction[j] + 180
+                self.points[i] += 5 * step * cos(theta)
+                self.points[i + 1] += randint(-1, 0) * 0.5
+                # self.direction[j] = 90 + self.direction[j]
+            if self.off_screen2(self.points[i], self.points[i + 1]):
+                self.direction[j] = 90 * cos(self.home_pos) + self.home_pos
 
     def off_screen(self, x, y):
-        return x < self.x + 10 or x > self.width + self.x - 10 or y < self.y + 10 or y > self.height + self.y - 10
+        return x < self.x + 25 or x > self.width + self.x - 25 or y < self.y + 25 or y > self.height + self.y - 25
+
+    def off_screen2(self, x, y):
+        return x < self.x + 30 or x > self.width + self.x - 30 or y < self.y + 30 or y > self.height + self.y - 30
 class DragImage(DragBehavior, Image):
     pass
 

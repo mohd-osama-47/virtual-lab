@@ -75,103 +75,113 @@
             font_size: dp(30)
             on_release: copper_exp.burner_on = 0 if self.state =="normal" else 1
 
+<LineRectangle@Widget>:
+    canvas:
+        Color:
+            rgba: .1, .1, 1, .9
+        Line:
+            width: 2.
+            rectangle: (self.x, self.y, self.width, self.height)
 <Experiment2>:
     name: 'experiment2'
 
-    IonsExperiment:
+    AnchorLayout:
+        anchor_x:'center'
+        anchor_y:'center'
+        pos_hint: {'center_x':0.5, 'center_y':0.5}
         size_hint: (0.80,0.90)
-        pos_hint: {'center_x':0.5, 'center_y':0.47}
-        id: ions_exp
-            # Image:
-            #     id: liquid_container
-            #     source: "./media/Burner.png"
-            #     pos_hint: {'center_x':0.5, 'y':0.1 }
-            #     pos_y: self.parent.y
-            #     size_hint_x: None
-            #     size_hint_y: None
-            #     size: self.texture_size[0]//2, self.texture_size[1]//2
-            #     canvas.before:
-            #         Color:
-            #             rgba: copper_exp.flame_color
-            #         RoundedRectangle:
-            #             # This creates the flame effect for the burner
-            #             size: self.parent.size[0]//3 + 2, self.parent.size[1]//3 + 4
-            #             pos: self.parent.center_x - self.parent.size[0]//6 - 1, burner.top
-            #             # top-left, top-right, bottom-left, bottom-right 
-            #             # corners can be rounded as needed as such:
-            #             radius: [0, 0, 50, 50]
-        # FloatLayout:
-        #     size: self.parent.size
-        #     pos: self.parent.pos
-        Image:
-            id: liquid_container
-            source: "./media/GlassContainer.png"
-            pos_y: self.parent.y
-            size_hint_x: None
-            size_hint_y: None
-            size: self.texture_size[0], self.texture_size[1]
-            id: ion_root
-            # canvas.before:
-            #     Color:
-            #         rgba: 1,0,0,0.2
-            #     Rectangle:
-            #         size: self.size
-            #         pos: self.pos
-            ParticleMesh:
-                # size_hint: [[1,1],[0,0]][app.hiding_parameter]
-                # size: self.parent.size
-                # pos: self.parent.pos
-                size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
-                pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
-                id: cu_ions
-                opacity: 1
-                line_color: [0, 0, 0, 0]
-                point_number: 10
-                move_to_pos: ions_exp.current_on
-                home_pos: 180
-                # canvas.before:
-                #     Color:
-                #         rgba: 1,0,1,0.2
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
-                canvas:
+        canvas.before:
+            Color:
+                rgba: 1,1,0,0.2
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        IonsExperiment:
+            size_hint: (0.80,0.90)
+            # pos_hint: {'center_x':0.5, 'center_y':0.5}
+            pos_hint: None, None
+            id: ions_exp
+            canvas.before:
+                Color:
+                    rgba: 1,0,0,0.2
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Image:
+                id: liquid_container
+                source: "./media/GlassContainer.png"
+                pos_hint: {'center_x':0.5, 'center_y':0.5}
+                # pos_y: ions_exp.y
+                # size_hint_x: None
+                # size_hint_y: None
+                size: self.texture_size[0], self.texture_size[1]
+                id: ion_root
+                
+                canvas.before:
                     Color:
-                        rgba: ions_exp.cu_ions_color
-                    Point:
-                        points: self.points
-                        pointsize: 20
-                    
+                        rgba: 1,0,1,0.2
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                LineRectangle:
+                    id: collision_box
+                    size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
+                    pos: self.parent.pos[0] + self.parent.width//2 - self.width//2, self.parent.pos[1] + self.parent.height//2 - self.height//2
+                ParticleMesh:
+                    # size_hint: [[1,1],[0,0]][app.hiding_parameter]
+                    # size: self.parent.size
+                    # pos: self.parent.pos
+                    size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
+                    pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
+                    id: cu_ions
+                    opacity: 1
+                    line_color: [0, 0, 0, 0]
+                    point_number: 50
+                    move_to_pos: ions_exp.current_on
+                    home_pos: 180
+                    # canvas.before:
+                    #     Color:
+                    #         rgba: 1,0,1,0.2
+                    #     Rectangle:
+                    #         size: self.size
+                    #         pos: self.pos
+                    canvas:
+                        Color:
+                            rgba: ions_exp.cu_ions_color
+                        Point:
+                            points: self.points
+                            pointsize: 10
+                        
+                
+                ParticleMesh:
+                    # size_hint: [[1,1],[0,0]][app.hiding_parameter]
+                    # size: self.parent.size
+                    # pos: self.parent.pos
+                    # size: self.parent.size  # important!
+                    size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
+                    pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
+                    id: mno_ions
+                    opacity: 1
+                    line_color: [0, 0, 0, 0]
+                    point_number: 50
+                    move_to_pos: ions_exp.current_on
+                    home_pos: 0
+                    # canvas.before:
+                    #     Color:
+                    #         rgba: 1,1,0,0.2
+                    #     Rectangle:
+                    #         size: self.size
+                    #         pos: self.pos
+                    canvas:
+                        Color:
+                            rgba: ions_exp.mno_ions_color
+                        Point:
+                            points: self.points
+                            pointsize: 10
             
-            ParticleMesh:
-                # size_hint: [[1,1],[0,0]][app.hiding_parameter]
-                # size: self.parent.size
-                # pos: self.parent.pos
-                # size: self.parent.size  # important!
-                size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
-                pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
-                id: mno_ions
-                opacity: 1
-                line_color: [0, 0, 0, 0]
-                point_number: 10
-                move_to_pos: ions_exp.current_on
-                home_pos: 0
-                # canvas.before:
-                #     Color:
-                #         rgba: 1,1,0,0.2
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
-                canvas:
-                    Color:
-                        rgba: ions_exp.mno_ions_color
-                    Point:
-                        points: self.points
-                        pointsize: 20
-        
-    BasicToggleButton:
-        font_name: 'font/arial.ttf'
-        text: app.get_corrected_text("أغلق الدائرة") if self.state =="normal" else app.get_corrected_text("إفتح الدائرة")
-        font_size: dp(30)
-        on_release: ions_exp.current_on = 0 if self.state =="normal" else 1
-        pos_x: self.parent.x + 0.7 * self.parent.width
+        BasicToggleButton:
+            font_name: 'font/arial.ttf'
+            text: app.get_corrected_text("أغلق الدائرة") if self.state =="normal" else app.get_corrected_text("إفتح الدائرة")
+            font_size: dp(30)
+            on_release: ions_exp.current_on = 0 if self.state =="normal" else 1
+            pos_x: self.parent.x + 0.7 * self.parent.width
