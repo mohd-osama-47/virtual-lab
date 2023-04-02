@@ -4,7 +4,7 @@
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty
+from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty, ColorProperty
 from kivy.graphics import Color, Line
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
@@ -45,6 +45,31 @@ def get_media_path(file):
     return media_path
 
 Config.set('kivy', 'default_font', get_media_path('font/Shoroq-Font.ttf'))
+
+class LineRectangle(Widget):
+    animated_color = ColorProperty([0.80,0.97,1.00, 0.5]) # the color property to be animated
+    pulse_interval = 1 # the interval for pulsing
+    stop_pulse = BooleanProperty(True)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(stop_pulse=self.blink_trigger)
+
+    def blink_trigger(self, *args):
+        if (not self.stop_pulse):
+            Clock.schedule_once(self.start_pulsing,0)
+        else:
+            Animation.cancel_all(self)
+            Animation(animated_color=[0.80,0.97,1.00, 0.5]).start(self)
+       
+    
+    def start_pulsing(self,*args):
+       d = self.pulse_interval /2
+       anim = Animation(animated_color=[0.80,0.97,1.00, 0.5], duration=d) + \
+              Animation(animated_color=[1.00,0.98,0.76, 0.6], duration=d)
+       anim.repeat = True
+       anim.start(self)
+
 
 class ItemDrawer(OneLineListItem):
     '''
@@ -252,8 +277,8 @@ class ParticleMesh(Widget):
         '''
         self.points = []
         self.direction = []
-        print(f'1:{self.width}, {self.height}')
-        print(f'2:{self.x}, {self.y}')
+        # print(f'1:{self.width}, {self.height}')
+        # print(f'2:{self.x}, {self.y}')
         for _ in range(self.point_number):
             #! Issue with getting screen size if you have other 
             #! Fixed with putting the screenmanager in a floatlayout
