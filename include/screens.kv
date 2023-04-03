@@ -10,6 +10,13 @@
 
 <Experiment1>:
     name: 'experiment1'
+    Image:
+        id: copper_instructions
+        pos_hint: {'center_x':0.5, 'center_y':0.819}
+        source: "./media/النحاس.png"
+        size_hint_x: None
+        size_hint_y: None
+        size: self.texture_size[0] * 0.75, self.texture_size[1] * 0.75
 
     CopperExperiment:
         size_hint: (0.80,0.90)
@@ -68,6 +75,19 @@
                         # top-left, top-right, bottom-left, bottom-right 
                         # corners can be rounded as needed as such:
                         radius: [0, 0, 50, 50]
+                
+                Image:
+                    id: smoke_object
+                    source: "./media/smoke.png"
+                    # pos_y: burner.top
+                    # pos_x: burner.x - self.width/2
+                    pos: self.parent.center_x - self.width/2, self.parent.y + test_tube.size[1]//3 + 3 + copper_exp.smoke_offset
+                    size_hint_x: None
+                    size_hint_y: None
+                    # # size: self.texture_size[0] // 2, self.texture_size[1] // 2
+                    # opacity: int(copper_exp.burner_on)
+                    opacity: copper_exp.start_smoke
+                    size: self.texture_size[0]//8, self.texture_size[1]//8
         
         BasicToggleButton:
             font_name: 'font/arial.ttf'
@@ -84,12 +104,18 @@
             size: self.size
 <Experiment2>:
     name: 'experiment2'
-
+    Image:
+        id: copper_instructions
+        pos_hint: {'center_x':0.5, 'center_y':0.815}
+        source: "./media/الايونات.png"
+        size_hint_x: None
+        size_hint_y: None
+        size: self.texture_size[0] * 0.45, self.texture_size[1] * 0.45
     AnchorLayout:
         anchor_x:'center'
         anchor_y:'center'
-        pos_hint: {'center_x':0.5, 'center_y':0.5}
-        size_hint: (0.80,0.90)
+        pos_hint: {'center_x':0.5, 'center_y':0.45}
+        size_hint: (0.80,0.70)
         # canvas.before:
         #     Color:
         #         rgba: 1,1,0,0.2

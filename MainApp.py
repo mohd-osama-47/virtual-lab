@@ -126,6 +126,9 @@ class CopperExperiment(Widget):
     flame_color = ListProperty(blue)    # color of the flame from the burner
     burner_on = BooleanProperty(False)  # Flag representing state of the burner (ON/OFF)
     start_animation = BooleanProperty(False)    # Flag to start or stop the color change animation
+
+    start_smoke = NumericProperty(0)    # controls opacity of smoke effect
+    smoke_offset = NumericProperty(0)   # controls how the smoke moves when heating
     
     def __init__(self, **kwargs):
         '''
@@ -161,11 +164,24 @@ class CopperExperiment(Widget):
         if self.start_animation:
             # means that the burner is now ON
             # start animation that changes color to blue
+            Animation.cancel_all(self)
             Animation(oxide_color=self.blue, step = 1/10).start(self)
+            Animation(start_smoke=1, step = 1/10).start(self)
+            smoke = Animation(smoke_offset=200, step = 1/60)
+            smoke &= Animation(start_smoke=0.5, step = 1/60)
+            smoke += Animation(smoke_offset=0, duration=0)
+            # smoke &= Animation(start_smoke=1, duration=0)
+            smoke.repeat = True
+            smoke.start(self)
         else:
             # means burner is now OFF
             # start animation that changes color BACK to brown
+            Animation.cancel_all(self)
             Animation(oxide_color=self.brown, step = 1/10).start(self)
+            # Animation(start_smoke=0, step = 1/10).start(self)
+            smoke = Animation(start_smoke=0, duration=0)
+            smoke &= Animation(smoke_offset=0, duration=0)
+            smoke.start(self)
     
     def check_flame_collision(self, *args):
         if not self.burner_on:
