@@ -6,7 +6,6 @@ from kivy.animation import Animation
 from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty, ColorProperty
 from kivy.graphics import Color, Line
-from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.config import Config
 from kivy.uix.image import Image
@@ -14,8 +13,9 @@ from kivy.uix.behaviors import DragBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
 
-SCREEN_RES = [960, 540]    # Set your desired screen size here please
-Window.size = (SCREEN_RES[0],SCREEN_RES[1])
+# from kivy.core.window import Window
+# SCREEN_RES = [960, 540]    # Set your desired screen size here please
+# Window.size = (SCREEN_RES[0],SCREEN_RES[1])
 
 # KivyMD related imports for Material Design look
 from kivymd.app import MDApp
@@ -100,16 +100,23 @@ class BasicToggleButton(MDFillRoundFlatButton, MDToggleButton):
         super().__init__(**kwargs)
         self.theme_text_color = "Custom"
 
-class Experiment1(MDScreen):
+class MainScreen(MDScreen):
     '''
     Class for the first screen in the GUI
     '''
     def __init__(self, **kw):
         super().__init__(**kw)
 
+class Experiment1(MDScreen):
+    '''
+    Class for the first experiment in the GUI
+    '''
+    def __init__(self, **kw):
+        super().__init__(**kw)
+
 class Experiment2(MDScreen):
     '''
-    Class for the second screen in the GUI
+    Class for the second experiment in the GUI
     '''
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -376,15 +383,18 @@ class GUIApp(MDApp):
             Builder.load_file(get_media_path('include/')+ file_name)
         
         self.sm = self.screen.ids.sm
+        self.sm.add_widget(MainScreen())
         self.sm.add_widget(Experiment1())
         exp2 = Experiment2()
         Clock.schedule_once(lambda dt: exp2.ids.cu_ions.plot_points(), 0)
         Clock.schedule_once(lambda dt: exp2.ids.mno_ions.plot_points(), 0)
         self.sm.add_widget(exp2)
 
-        self.experiment1 = self.screen.ids.sm.get_screen('experiment1')
+        self.main_screen = self.sm.get_screen('main')
+        self.screen_dict["main"] = self.main_screen
+        self.experiment1 = self.sm.get_screen('experiment1')
         self.screen_dict["experiment1"] = self.experiment1
-        self.experiment2 = self.screen.ids.sm.get_screen('experiment2')
+        self.experiment2 = self.sm.get_screen('experiment2')
         self.screen_dict["experiment2"] = self.experiment2
 
         return self.screen
