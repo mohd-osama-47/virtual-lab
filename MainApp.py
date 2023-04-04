@@ -127,7 +127,7 @@ class CopperExperiment(Widget):
     burner_on = BooleanProperty(False)  # Flag representing state of the burner (ON/OFF)
     start_animation = BooleanProperty(False)    # Flag to start or stop the color change animation
 
-    start_smoke = NumericProperty(0)    # controls opacity of smoke effect
+    smoke_opacity = NumericProperty(0)    # controls opacity of smoke effect
     smoke_offset = NumericProperty(0)   # controls how the smoke moves when heating
     
     def __init__(self, **kwargs):
@@ -165,12 +165,11 @@ class CopperExperiment(Widget):
             # means that the burner is now ON
             # start animation that changes color to blue
             Animation.cancel_all(self)
-            Animation(oxide_color=self.blue, step = 1/10).start(self)
-            Animation(start_smoke=1, step = 1/10).start(self)
-            smoke = Animation(smoke_offset=200, step = 1/60)
-            smoke &= Animation(start_smoke=0.5, step = 1/60)
-            smoke += Animation(smoke_offset=0, duration=0)
-            # smoke &= Animation(start_smoke=1, duration=0)
+            Animation(oxide_color=self.blue, step = 1/10, duration=1).start(self)
+            Animation(smoke_opacity=0, duration=0).start(self)
+            smoke = Animation(smoke_offset=200, smoke_opacity=0.8, step = 1/60)
+            smoke += Animation(smoke_offset=0, smoke_opacity=0, duration=0)
+            # smoke &= Animation(smoke_opacity=1, duration=0)
             smoke.repeat = True
             smoke.start(self)
         else:
@@ -178,8 +177,8 @@ class CopperExperiment(Widget):
             # start animation that changes color BACK to brown
             Animation.cancel_all(self)
             Animation(oxide_color=self.brown, step = 1/10).start(self)
-            # Animation(start_smoke=0, step = 1/10).start(self)
-            smoke = Animation(start_smoke=0, duration=0)
+            # Animation(smoke_opacity=0, step = 1/10).start(self)
+            smoke = Animation(smoke_opacity=0, duration=0)
             smoke &= Animation(smoke_offset=0, duration=0)
             smoke.start(self)
     
@@ -344,7 +343,7 @@ class ParticleMesh(Widget):
         return x < self.x + 25 or x > self.width + self.x - 25 or y < self.y + 25 or y > self.height + self.y - 25
 
     def off_screen2(self, x, y):
-        return x < self.x + 30 or x > self.width + self.x - 30 or y < self.y + 30 or y > self.height + self.y - 30
+        return x < self.x + 30 or x > self.width + self.x - 30 or y < self.y + 30 or y > self.height + self.y
 class DragImage(DragBehavior, Image):
     pass
 
