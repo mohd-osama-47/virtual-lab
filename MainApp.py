@@ -127,7 +127,7 @@ class CopperExperiment(Widget):
     application of a direct heat source
     '''
     #* Colors are represented in the RGBA format in a list
-    brown = [0.72, 0.45, 0.2, 0.9] 
+    brown = [0, 0, 0, 0.9]
     blue = [0.12, 0.72, 0.60, 0.9]
     oxide_color = ListProperty(brown)   # Color of the material within the test tube
     flame_color = ListProperty(blue)    # color of the flame from the burner

@@ -8,7 +8,8 @@
 
 <ExpTitle@SmartTileWithLabel>
     size_hint_y: None
-    height: "350dp"
+    width: "200dp"
+    height: "240dp"
 
 <MainScreen>:
     name:'main'
@@ -32,7 +33,6 @@
         ExpTitle:
             source: "media/exp2_thumbnail.png"
             font_name: 'font/arial.ttf'
-            # text: f"[size=26]{Cat 2}[/size]\n[size=14]cat-2.jpg[/size]"
             text: f"[font={self.font_name}][size=26]{app.get_corrected_text('الأيونات')}[/size][/font]\n[font={self.font_name}][size=14]{app.get_corrected_text('إبدأ التجربة')}[/size][/font]"
             on_press: on_press: app.switch_screen(None, "experiment2")
             tile_text_color: app.theme_cls.primary_light
@@ -82,8 +82,6 @@
                 Image:
                     id: flame_object
                     source: "./media/Flame.png"
-                    # pos_y: burner.top
-                    # pos_x: burner.x - self.width/2
                     pos: burner.center_x - self.width/2, burner.top + 12
                     size_hint_x: None
                     size_hint_y: None
@@ -102,13 +100,10 @@
                             radius: [0, 0, 50, 50]
                     
             DragImage:
-                # size_hint: 0.25, 0.2
                 id: test_tube
                 source: "./media/TestTube.png"
-                # size: 250, 250
                 size_hint_x: None
                 size_hint_y: None
-                # size: 250, 250
                 size: self.texture_size[0]//2, self.texture_size[1]//2
                 canvas.before:
                     Color:
@@ -124,13 +119,9 @@
                 Image:
                     id: smoke_object
                     source: "./media/smoke.png"
-                    # pos_y: burner.top
-                    # pos_x: burner.x - self.width/2
                     pos: self.parent.center_x - self.width/2, self.parent.y + test_tube.size[1]//3 + 3 + copper_exp.smoke_offset
                     size_hint_x: None
                     size_hint_y: None
-                    # # size: self.texture_size[0] // 2, self.texture_size[1] // 2
-                    # opacity: int(copper_exp.burner_on)
                     opacity: copper_exp.smoke_opacity
                     size: self.texture_size[0]//8, self.texture_size[1]//8
         
@@ -140,6 +131,7 @@
             font_size: dp(30)
             on_release: copper_exp.burner_on = 0 if self.state =="normal" else 1
 
+
 <LineRectangle>:
     canvas:
         Color:
@@ -147,6 +139,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
 <Experiment2>:
     name: 'experiment2'
     Image:
@@ -156,28 +149,21 @@
         size_hint_x: None
         size_hint_y: None
         size: self.texture_size[0] * 0.45, self.texture_size[1] * 0.45
+
     AnchorLayout:
         anchor_x:'center'
         anchor_y:'center'
         pos_hint: {'center_x':0.5, 'center_y':0.45}
         size_hint: (0.80,0.70)
-        # canvas.before:
-        #     Color:
-        #         rgba: 1,1,0,0.2
-        #     Rectangle:
-        #         size: self.size
-        #         pos: self.pos
+        
         IonsExperiment:
             size_hint: (0.80,0.90)
             pos_hint: {'center_x':0.5, 'center_y':0.5}
-            # pos_hint: None, None
             id: ions_exp
 
             Image:
                 pos: self.parent.center
                 source: "./media/GlassContainer.png"
-                # pos_hint: {'center_x':0.5, 'center_y':0.5}
-                # pos_y: ions_exp.y
                 size_hint_x: None
                 size_hint_y: None
                 size: self.texture_size[0], self.texture_size[1]
@@ -193,39 +179,23 @@
             Image:
                 pos: ion_root.pos
                 source: "./media/IonBatteryOn.png" if ions_exp.current_on else "./media/IonBatteryOff.png"
-                # pos_hint: {'center_x':0.5, 'center_y':0.5}
-                # pos_y: ions_exp.y
                 size_hint_x: None
                 size_hint_y: None
                 size: self.texture_size[0], self.texture_size[1]
-                # pos: self.parent.pos[0] + self.parent.width//2 - self.width//2, self.parent.pos[1] + self.parent.height//2 - self.height  
+
             RelativeLayout:
                 size: ion_root.size
                 pos: ion_root.pos
-                # canvas.before:
-                #     Color:
-                #         rgba: 0.8,0,1,0.2
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
+
                 ParticleMesh:
-                    # size_hint: [[1,1],[0,0]][app.hiding_parameter]
-                    # size: self.parent.size
-                    # pos: self.parent.pos
                     size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
-                    # pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
                     id: cu_ions
                     opacity: 1
                     line_color: [0, 0, 0, 0]
                     point_number: 50
                     move_to_pos: ions_exp.current_on
                     home_pos: 180
-                    # canvas.before:
-                    #     Color:
-                    #         rgba: 1,0,1,0.2
-                    #     Rectangle:
-                    #         size: self.size
-                    #         pos: self.pos
+
                     canvas:
                         Color:
                             rgba: ions_exp.cu_ions_color
@@ -235,24 +205,14 @@
                         
                 
                 ParticleMesh:
-                    # size_hint: [[1,1],[0,0]][app.hiding_parameter]
-                    # size: self.parent.size
-                    # pos: self.parent.pos
-                    # size: self.parent.size  # important!
                     size: self.parent.size[0] * 0.8, self.parent.size[1] * 0.8
-                    # pos: self.parent.x + self.parent.size[0] * 0.1, self.parent.y + self.parent.size[1] * 0.1
                     id: mno_ions
                     opacity: 1
                     line_color: [0, 0, 0, 0]
                     point_number: 50
                     move_to_pos: ions_exp.current_on
                     home_pos: 0
-                    # canvas.before:
-                    #     Color:
-                    #         rgba: 1,1,0,0.2
-                    #     Rectangle:
-                    #         size: self.size
-                    #         pos: self.pos
+
                     canvas:
                         Color:
                             rgba: ions_exp.mno_ions_color
