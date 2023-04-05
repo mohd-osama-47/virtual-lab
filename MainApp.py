@@ -121,6 +121,13 @@ class Experiment2(MDScreen):
     def __init__(self, **kw):
         super().__init__(**kw)
 
+class Experiment3(MDScreen):
+    '''
+    Class for the third experiment in the GUI
+    '''
+    def __init__(self, **kw):
+        super().__init__(**kw)
+
 class CopperExperiment(Widget):
     '''
     Class representing the copper extraction experiment through the 
@@ -261,6 +268,78 @@ class IonsExperiment(Widget):
             Animation(cu_ions_color=self.def_color, step = 1/30).start(self)
             Animation(mno_ions_color=self.def_color, step = 1/30).start(self)
     
+
+class ChlorineExperiment(Widget):
+    '''
+    Class representing the extraction of Chlorine gas by dripping HCl into a flask containing Potassium Permanganate
+    '''
+    #* Colors are represented in the RGBA format in a list
+    dropping_on = BooleanProperty(False)  # Flag representing state of the dripper (ON/OFF)
+    animation_on = BooleanProperty(False)
+
+    droplet_opacity = NumericProperty(0)    # controls opacity of droplet effect
+    droplet_offset = NumericProperty(0)   # controls how the droplet moves when dripping
+
+    smoke_opacity = NumericProperty(0)    # controls opacity of smoke effect
+    smoke_offset = NumericProperty(0)   # controls how the smoke moves when reaction starts
+    
+    def __init__(self, **kwargs):
+        '''
+        Constructor of the widget class
+        '''
+        super().__init__(**kwargs)
+        # Bind the start_animnation flag to a function 
+        # so that the function gets called whenever 
+        # the varibale changes.
+        self.bind(dropping_on=self.anim_droplet)
+        self.bind(animation_on=self.anim_reaction)
+        
+    def _change_flag_state(self, flag: bool, *args):
+        '''
+        Helper function to change the state of a boolean flag using kivy clock commands
+        '''
+        # Animation(droplet_opacity=0, droplet_offset=0, duration=0).start(self)
+        if not flag:
+            Animation(droplet_opacity=0, droplet_offset=0, duration=0).start(self)
+        smoke = Animation(smoke_opacity=0, duration=0)
+        smoke &= Animation(smoke_offset=0, duration=0)
+        smoke.start(self)
+        self.animation_on = flag
+
+    def anim_droplet(self, *args):
+        '''
+        Creates an animation for droplets falling into the flask
+        '''
+        if self.dropping_on:
+            # means that the dripper is now ON
+            # start animation that drops a droplet to the flask
+            Animation(droplet_opacity=0, duration=0).start(self)
+            Animation(smoke_opacity=0, duration=0).start(self)
+            drop = Animation(droplet_offset=-160, droplet_opacity=1, step = 1/60, duration=0.7)
+            drop += Animation(droplet_offset=5, droplet_opacity=0, duration=0)
+            # drop &= Animation(droplet_opacity=1, duration=0)
+            drop.repeat = True
+            drop.start(self)
+            # Call the gas emitter function after 3 seconds have passed (3 drops essentially)
+            Clock.schedule_once(lambda dt: self._change_flag_state(True), 3)
+        else:
+            Animation.cancel_all(self)
+            self._change_flag_state(False)
+    def anim_reaction(self, *args):
+        '''
+        Creates an animation for displaying the chemical reaction
+        '''
+        if self.animation_on:
+            # means that the smoke is now ON
+            # start animation that generates chlorine gas
+            # Animation.cancel_all(self)
+            Animation(smoke_opacity=0, duration=0).start(self)
+            smoke = Animation(smoke_offset=300, smoke_opacity=0.8, step = 1/60)
+            smoke += Animation(smoke_offset=0, smoke_opacity=0, duration=0)
+            # smoke &= Animation(smoke_opacity=1, duration=0)
+            smoke.repeat = True
+            smoke.start(self)
+    
 class ParticleMesh(Widget):
     '''
     Class definition responsible for generating the animated particle effect in the background
@@ -389,6 +468,7 @@ class GUIApp(MDApp):
         Clock.schedule_once(lambda dt: exp2.ids.cu_ions.plot_points(), 0)
         Clock.schedule_once(lambda dt: exp2.ids.mno_ions.plot_points(), 0)
         self.sm.add_widget(exp2)
+        self.sm.add_widget(Experiment3())
 
         self.main_screen = self.sm.get_screen('main')
         self.screen_dict["main"] = self.main_screen
@@ -396,6 +476,8 @@ class GUIApp(MDApp):
         self.screen_dict["experiment1"] = self.experiment1
         self.experiment2 = self.sm.get_screen('experiment2')
         self.screen_dict["experiment2"] = self.experiment2
+        self.experiment3 = self.sm.get_screen('experiment3')
+        self.screen_dict["experiment3"] = self.experiment3
 
         return self.screen
     

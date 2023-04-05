@@ -46,10 +46,10 @@
         spacing: dp(4)
 
         ExpTitle:
-            source: "media/icon.png"
+            source: "media/exp3_thumbnail.png"
             font_name: 'font/arial.ttf'
             text: f"[font={self.font_name}][size=26]{app.get_corrected_text('غاز الكلور')}[/size][/font]\n[font={self.font_name}][size=14]{app.get_corrected_text('إبدأ التجربة')}[/size][/font]"
-            on_press: app.switch_screen(None, "experiment1")
+            on_press: app.switch_screen(None, "experiment3")
             tile_text_color: app.theme_cls.primary_light
 
 
@@ -225,4 +225,80 @@
         text: app.get_corrected_text("أغلق الدائرة") if self.state =="normal" else app.get_corrected_text("إفتح الدائرة")
         font_size: dp(30)
         on_release: ions_exp.current_on = 0 if self.state =="normal" else 1
+        pos_x: self.parent.x + 0.7 * self.parent.width
+
+
+<Experiment3>:
+    name: 'experiment3'
+    Image:
+        id: copper_instructions
+        pos_hint: {'center_x':0.5, 'center_y':0.862}
+        source: "./media/الكلور.png"
+        size_hint_x: None
+        size_hint_y: None
+        size: self.texture_size[0] * 0.45, self.texture_size[1] * 0.45
+    
+    AnchorLayout:
+        anchor_x:'center'
+        anchor_y:'center'
+        pos_hint: {'center_x':0.5, 'center_y':0.45}
+        size_hint: (0.80,0.70)
+        
+        ChlorineExperiment:
+            size_hint: (0.80,0.90)
+            pos_hint: {'center_x':0.5, 'center_y':0.5}
+            id: cl_exp
+
+            Image:
+                source: "./media/SeparatoryFunnel.png"
+                size_hint_x: None
+                size_hint_y: None
+                size: self.texture_size[0] * 0.65, self.texture_size[1] * 0.65
+                pos: self.parent.pos[0] + self.parent.width//2 - self.width//2, self.parent.pos[1] + self.parent.height//2 - 0.28 * self.height
+                id: drip_funnel
+                canvas.before:
+                    Color:
+                        # Light Yellow-ish color to represent HCl acid in the funnel
+                        # rgba: [1.00,0.98,0.76, 0.8]
+                        rgba: [245/255, 251/255, 152/255, 0.8]
+                        # rgba: [1.00,0,0, 1]
+                    RoundedRectangle:
+                        # This creates the flame effect for the burner
+                        size: self.parent.size[0]*0.07, self.parent.size[1]*0.08
+                        pos: self.parent.center[0] - self.width*0.25, self.parent.center[1]
+                        # top-left, top-right, bottom-left, bottom-right 
+                        # corners can be rounded as needed as such:
+                        radius: [0, 0, 100, 100]
+            
+            Image:
+                source: "./media/Flask.png"
+                size_hint_x: None
+                size_hint_y: None
+                size: self.texture_size[0] * 0.45, self.texture_size[1] * 0.45
+                pos: drip_funnel.center[0] - self.width//2 - 10, drip_funnel.y - 1.1*self.height
+                id: chlorine_flask
+            
+                Image:
+                    id: droplet_object
+                    source: "./media/Droplet.png"
+                    pos: self.parent.center_x - self.width/2, self.parent.y + cl_exp.size[1]//3 + 3 + cl_exp.droplet_offset
+                    size_hint_x: None
+                    size_hint_y: None
+                    opacity: cl_exp.droplet_opacity
+                    size: self.texture_size[0]//8, self.texture_size[1]//8
+                
+                Image:
+                    id: smoke_object
+                    source: "./media/smoke_chlorine.png"
+                    pos: self.parent.center_x - self.width/2, self.parent.y + cl_exp.size[1]//3 + 3 + cl_exp.smoke_offset
+                    size_hint_x: None
+                    size_hint_y: None
+                    opacity: cl_exp.smoke_opacity
+                    size: self.texture_size[0]//8, self.texture_size[1]//8
+    
+    BasicToggleButton:
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("إبدأ تنقيط حمض الـ HCl") if self.state =="normal" else app.get_corrected_text("أوقف تنقيط حمض الـ HCl")
+        font_size: dp(30)
+        on_release: cl_exp.dropping_on = 0 if self.state =="normal" else 1
         pos_x: self.parent.x + 0.7 * self.parent.width
