@@ -11,39 +11,70 @@
     width: "200dp"
     height: "240dp"
 
+<RotatedImage@Image>:
+    angle:0
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: root.angle
+            axis: 0, 0, 1
+            origin: root.center
+    canvas.after:
+        PopMatrix
+
 <MainScreen>:
     name:'main'
+
     
     MDGridLayout:
-        pos_hint: {'center_x':0.5, 'y':0.47}
-        id: cont1
-        cols: 2
-        adaptive_height: True
-        padding: dp(4), dp(4)
-        spacing: dp(10)
-        size_hint_x: 0.6
-
-        ExpTitle:
-            source: "media/exp1_thumbnail.png"
-            font_name: 'font/arial.ttf'
-            text: f"[font={self.font_name}][size=26]{app.get_corrected_text('إستخلاص النحاس')}[/size][/font]\n[font={self.font_name}][size=14]{app.get_corrected_text('إبدأ التجربة')}[/size][/font]"
-            on_press: app.switch_screen(None, "experiment1")
-            tile_text_color: app.theme_cls.primary_light
-
-        ExpTitle:
-            source: "media/exp2_thumbnail.png"
-            font_name: 'font/arial.ttf'
-            text: f"[font={self.font_name}][size=26]{app.get_corrected_text('الأيونات')}[/size][/font]\n[font={self.font_name}][size=14]{app.get_corrected_text('إبدأ التجربة')}[/size][/font]"
-            on_press: on_press: app.switch_screen(None, "experiment2")
-            tile_text_color: app.theme_cls.primary_light
-    
-    MDGridLayout:
-        pos: cont1.center[0] - self.width/2, cont1.pos[1] - self.height
-        size_hint_x: 0.3
+        pos_hint: {'center_x':0.5, 'center_y':0.47}
         cols: 1
+        rows: 3
+        rows_minimum: {0: 60, 1: 50, 2: 50 }
         adaptive_height: True
-        padding: dp(4), dp(4)
-        spacing: dp(4)
+        padding: dp(15), dp(15)
+        spacing: dp(5)
+        size_hint_x: 0.8
+        id:container0
+        canvas.before:
+            Color:
+                rgba: (32/255, 131/255, 250/255, 0.1)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+                radius: [(20, 20), (20, 20), (20, 20), (20, 20)]
+        
+        Label:
+            font_name: 'font/arial.ttf'
+            text: f'[font={self.font_name}][size=40]{app.get_corrected_text("التجارب المتوفرة هي:")}[/size][/font]'
+            markup:True
+            # pos_hint: {'center_x':0.5, 'center_y':0.2}
+            valign: 'center'
+            halign: 'center'
+            outline_width: 1
+            size: self.texture_size
+        
+        MDGridLayout:
+            # pos_hint: {'center_x':0.5, 'y':0.47}
+            id: cont1
+            cols: 2
+            adaptive_height: True
+            padding: dp(4), dp(4)
+            spacing: dp(10)
+            size_hint_x: 0.6
+            ExpTitle:
+                source: "media/exp1_thumbnail.png"
+                font_name: 'font/arial.ttf'
+                text: f"[font={self.font_name}][size=26]{app.get_corrected_text('إستخلاص النحاس')}[/size][/font]\n[font={self.font_name}][size=14]{app.get_corrected_text('إبدأ التجربة')}[/size][/font]"
+                on_press: app.switch_screen(None, "experiment1")
+                tile_text_color: app.theme_cls.primary_light
+
+            ExpTitle:
+                source: "media/exp2_thumbnail.png"
+                font_name: 'font/arial.ttf'
+                text: f"[font={self.font_name}][size=26]{app.get_corrected_text('الأيونات')}[/size][/font]\n[font={self.font_name}][size=14]{app.get_corrected_text('إبدأ التجربة')}[/size][/font]"
+                on_press: on_press: app.switch_screen(None, "experiment2")
+                tile_text_color: app.theme_cls.primary_light
 
         ExpTitle:
             source: "media/exp3_thumbnail.png"
@@ -52,6 +83,17 @@
             on_press: app.switch_screen(None, "experiment3")
             tile_text_color: app.theme_cls.primary_light
 
+    RotatedImage:
+        id: copper_instructions
+        angle:30
+        # pos_hint: {'center_x':0.5, 'center_y':0.819}
+        center_x: container0.right
+        y: container0.top - 0.75*self.height
+        source: "./media/icon.png"
+        size_hint_x: None
+        size_hint_y: None
+        size: self.texture_size[0] * 0.3, self.texture_size[1] * 0.3
+    
 
 <Experiment1>:
     name: 'experiment1'

@@ -8,14 +8,15 @@ from kivy.properties import StringProperty, ListProperty, BooleanProperty, Numer
 from kivy.graphics import Color, Line
 from kivy.uix.widget import Widget
 from kivy.config import Config
+from kivy.core.window import Window
 from kivy.uix.image import Image
 from kivy.uix.behaviors import DragBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
 
 # from kivy.core.window import Window
-# SCREEN_RES = [960, 540]    # Set your desired screen size here please
-# Window.size = (SCREEN_RES[0],SCREEN_RES[1])
+SCREEN_RES = [960, 540]    # Set your desired screen size here please
+Window.size = (SCREEN_RES[0],SCREEN_RES[1])
 
 # KivyMD related imports for Material Design look
 from kivymd.app import MDApp
@@ -46,6 +47,90 @@ def get_media_path(file):
 
 Config.set('kivy', 'default_font', get_media_path('font/Shoroq-Font.ttf'))
 
+class ParticleMesh2(Widget):
+    '''
+    Class difinition responsible for generating the animated particle effect in the background
+
+    Attributes:
+        - points (kivy ListProperty): list of all points that are moving in the background
+        - color (kivy ListProperty): list of colors for each line connecting the points
+        - line_color (kivy ListProperty): color of the generated line between points
+        - point_count (kivy NumericProperty): amount of generated points
+
+    Methods:
+        - plot_points: generates all the points and initialzes them with random directions, also starts a Clock function call that updates their position
+        - draw_lines: draws lines between points based on their proximity
+        - update_positions: update the position of points by moving them in increments, also checks if they went out of the bounds of the display
+        - distance_between_points (static method): checks the euclidean distance between the points
+        - off_screen (static method): returns a boolean to signify if a point is off bounds
+    '''
+    points = ListProperty()
+    color = ListProperty(get_color_from_hex("#eeeeee88"))
+    line_color = ListProperty([1,1,1])
+    point_count = NumericProperty(30)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.direction = []
+        self.point_number = self.point_count
+        # print(f'1:{self.width}, {self.height}')
+        Clock.schedule_once(lambda dt: self.plot_points(), 0)
+
+    def plot_points(self):
+        '''
+        Generates all the points in the background and starts a Clock event for updating their positions.
+        '''
+        for _ in range(self.point_number):
+            #! Issue with getting screen size if you have other 
+            #! Fixed with putting the screenmanager in a floatlayout
+            # x = randint(0, self.width)
+            # y = randint(0, self.height)
+            x = randint(0, SCREEN_RES[0])
+            y = randint(0, SCREEN_RES[1])
+            self.points.extend([x, y])
+            self.direction.append(randint(0, 359))
+        # print('THE PARTICLE EFFECT LIST IS:', self.points)
+        Clock.schedule_interval(self.update_positions, 1/10)
+        
+
+    def draw_lines(self):
+        '''
+        Draws all the lines and colours them according to how close the points at the tail ends of the line are.
+        '''
+        self.canvas.after.clear()
+        with self.canvas.after:
+            for i in range(0, len(self.points), 2):
+                for j in range(i + 2, len(self.points), 2):
+
+                    d = self.distance_between_points(self.points[i], self.points[i + 1], self.points[j],
+                                                     self.points[j + 1])
+                    if d > 200:
+                        continue
+                    color = 1 - d / 200
+                    Color(rgba=[self.line_color[0]*color, self.line_color[1]*color, self.line_color[2]*color, 0.2])
+                    Line(points=[self.points[i], self.points[i + 1], self.points[j], self.points[j + 1]], width = 3 * color)
+    
+    def update_positions(self, *args):
+        '''
+        Updates the points in increaments, also checks if a point went out of bounds
+        '''
+        step = 0.6
+        for i, j in zip(range(0, len(self.points), 2), range(len(self.direction))):
+            theta = self.direction[j]
+            self.points[i] += step * cos(theta)
+            self.points[i + 1] += step * sin(theta)
+
+            if self.off_screen(self.points[i], self.points[i + 1]):
+                self.direction[j] = 90 + self.direction[j]
+
+        self.draw_lines()
+
+    @staticmethod
+    def distance_between_points(x1, y1, x2, y2):
+        return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+    def off_screen(self, x, y):
+        return x < -5 or x > self.width + 5 or y < -5 or y > self.height + 5
 class LineRectangle(Widget):
     animated_color = ColorProperty([0.80,0.97,1.00, 0.5]) # the color property to be animated
     pulse_interval = 1 # the interval for pulsing
