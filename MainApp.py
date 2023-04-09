@@ -136,7 +136,7 @@ class CopperExperiment(Widget):
     #* Colors are represented in the RGBA format in a list
     brown = [0, 0, 0, 0.9]
     blue = [0.12, 0.72, 0.60, 0.9]
-    oxide_color = ListProperty(brown)   # Color of the material within the test tube
+    oxide_color = ListProperty(blue)   # Color of the material within the test tube
     flame_color = ListProperty(blue)    # color of the flame from the burner
     burner_on = BooleanProperty(False)  # Flag representing state of the burner (ON/OFF)
     start_animation = BooleanProperty(False)    # Flag to start or stop the color change animation
@@ -179,7 +179,7 @@ class CopperExperiment(Widget):
             # means that the burner is now ON
             # start animation that changes color to blue
             Animation.cancel_all(self)
-            Animation(oxide_color=self.blue, step = 1/10, duration=1).start(self)
+            Animation(oxide_color=self.brown, step = 1/10, duration=1).start(self)
             Animation(smoke_opacity=0, duration=0).start(self)
             smoke = Animation(smoke_offset=200, smoke_opacity=0.8, step = 1/60)
             smoke += Animation(smoke_offset=0, smoke_opacity=0, duration=0)
@@ -190,7 +190,7 @@ class CopperExperiment(Widget):
             # means burner is now OFF
             # start animation that changes color BACK to brown
             Animation.cancel_all(self)
-            Animation(oxide_color=self.brown, step = 1/10).start(self)
+            Animation(oxide_color=self.blue, step = 1/10).start(self)
             # Animation(smoke_opacity=0, step = 1/10).start(self)
             smoke = Animation(smoke_opacity=0, duration=0)
             smoke &= Animation(smoke_offset=0, duration=0)
