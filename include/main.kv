@@ -7,6 +7,32 @@
 <ItemDrawer>:
     on_release: self.parent.set_color_item(self)
 
+<AText>:
+    # Based on the great chunk of code from:
+    # https://github.com/hosseinofj/persian_textinput_kivy/blob/master/codes
+    text: "..."
+    halign: "right"
+    multiline: 0
+    font_name: 'font/arial.ttf'
+    halign: "right"
+    adaptive_height: True
+    font_size: 26
+
+<DatabaseContent>:
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "120dp"
+
+    AText:
+        line_color_focus: get_color_from_hex("#344954")
+
+    MDDropDownItem:
+        id: drop_item
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        text: '2019'
+        on_release: app.menu.open()
+
 <ContentNavigationDrawer@BoxLayout>:
     orientation: "vertical"
     padding: dp(20), dp(50)

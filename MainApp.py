@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # Kivy related imports for the GUI
+from kivy.metrics import dp
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.lang import Builder
@@ -13,6 +14,7 @@ from kivy.uix.image import Image
 from kivy.uix.behaviors import DragBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
+from kivy.uix.textinput import TextInput
 
 # from kivy.core.window import Window
 SCREEN_RES = [960, 540]    # Set your desired screen size here please
@@ -21,10 +23,15 @@ Window.size = (SCREEN_RES[0],SCREEN_RES[1])
 # KivyMD related imports for Material Design look
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.dialog import MDDialog
 from kivymd.theming import ThemableBehavior
 from kivymd.uix.list import MDList, OneLineListItem
 from kivymd.uix.behaviors.toggle_behavior import MDToggleButton
 from kivymd.uix.button import MDFillRoundFlatButton
+from kivymd.uix.list import OneLineIconListItem
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.textfield import  MDTextField
 
 import os
 from random import randint
@@ -47,6 +54,40 @@ def get_media_path(file):
 
 Config.set('kivy', 'default_font', get_media_path('font/Shoroq-Font.ttf'))
 
+class AText(MDTextField):
+    '''
+        Based on the great chunk of code from:
+        https://github.com/hosseinofj/persian_textinput_kivy/blob/master/codes
+    '''
+    max_chars = NumericProperty(20) # maximum character allowed
+    str = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def insert_text(self, substring, from_undo=False):
+        if not from_undo and (len(self.text) + len(substring) > self.max_chars):
+            return
+        self.str = self.str+substring
+        self.text = self.get_corrected_text(self.str)
+        substring = ""
+        super(AText, self).insert_text(substring, from_undo)
+
+    def do_backspace(self, from_undo=False, mode='bkspc'):
+        self.str = self.str[0:len(self.str)-1]
+        self.text = self.get_corrected_text(self.str)
+    
+    def get_corrected_text(self, text_to_correct):
+        '''
+        Reverses text to support arabic writing
+        '''
+        text_to_correct = arabic_reshaper.reshape(text_to_correct)
+        return bidiAlgorithm.get_display(text_to_correct)
+
+class DatabaseContent(BoxLayout):
+    pass
+class Item(OneLineListItem):
+    pass
 class ParticleMesh2(Widget):
     '''
     Class difinition responsible for generating the animated particle effect in the background
@@ -525,6 +566,7 @@ class GUIApp(MDApp):
 
     # Dict that contains all the screen names and their instances
     screen_dict = {}
+    dialog = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -564,8 +606,60 @@ class GUIApp(MDApp):
         self.experiment3 = self.sm.get_screen('experiment3')
         self.screen_dict["experiment3"] = self.experiment3
 
+        self.content = DatabaseContent()
+        menu_items = [
+                {
+                    "viewclass": "Item",
+                    "text": f"{i}",
+                    "height": dp(56),
+                    "on_release": lambda x=f"{i}": self.set_item(x),
+                } for i in range(2019, 2025)
+        ]
+
+        self.menu = MDDropdownMenu(
+            caller=self.content.ids.drop_item,
+            items=menu_items,
+            position="center",
+            width_mult=4,
+        )
+        self.menu.bind()
+
+        # self.content.add_widget(self.menu)
+        print(self.content.ids)
+        
+        self.dialog = MDDialog(
+            # title=f"[font=font/arial.ttf]{app.get_corrected_text('إسم الطالب')}[/font]",
+            type="custom",
+            content_cls=self.content,
+            buttons=[
+                MDFlatButton(
+                    text="NO",
+                    text_color=self.theme_cls.accent_color,
+                    on_release=self.close_dialog
+                ),
+                MDFlatButton(
+                    text="YES",
+                    text_color = self.theme_cls.primary_color,
+                    on_release=self.show_dialog
+                ),
+            ],
+        )
+
         return self.screen
     
+    def set_item(self, text_item):
+        self.content.ids.drop_item.set_item(text_item)
+        self.menu.dismiss()
+
+    def show_simple_dialog(self):
+        self.dialog.open()
+    
+    def show_dialog(self):
+        self.dialog.open()
+    
+    def close_dialog(self, inst):
+        self.dialog.dismiss()
+
     def switch_screen(self, instance_navigation_rail_item, screen_name):
         '''
         Called when tapping on rail menu items. Switches application screens.
