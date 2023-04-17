@@ -590,7 +590,7 @@ class GUIApp(MDApp):
             ],
             row_data=[(
                         self.stored_data.get(item)["experiment"],
-                        self.stored_data.get(item)["year"], 
+                        f'[font=font/arial.ttf]{self.stored_data.get(item)["year"]}[/font]', 
                         f'[font=font/arial.ttf]{self.get_corrected_text(self.stored_data.get(item)["name"])}[/font]', 
                         item
                         ) for item in self.stored_data.keys()],
@@ -643,10 +643,22 @@ class GUIApp(MDApp):
         menu_items = [
                 {
                     "viewclass": "Item",
-                    "text": f"{i}",
+                    "text":f"[font=font/arial.ttf]{app.get_corrected_text('الأولى')}[/font]",
                     "height": dp(56),
-                    "on_release": lambda x=f"{i}": self.set_item(x, "date"),
-                } for i in range(2019, 2025)
+                    "on_release": lambda x=app.get_corrected_text('الأولى'): self.set_item(x),
+                },
+                {
+                    "viewclass": "Item",
+                    "text":f"[font=font/arial.ttf]{app.get_corrected_text('الثانية')}[/font]",
+                    "height": dp(56),
+                    "on_release": lambda x=app.get_corrected_text('الثانية'): self.set_item(x),
+                },
+                {
+                    "viewclass": "Item",
+                    "text":f"[font=font/arial.ttf]{app.get_corrected_text('الثالثة')}[/font]",
+                    "height": dp(56),
+                    "on_release": lambda x=app.get_corrected_text('الثالثة'): self.set_item(x),
+                }
         ]
 
         self.menu = MDDropdownMenu(
@@ -725,7 +737,7 @@ class GUIApp(MDApp):
     def update_row_data(self, *args):
         row_data=[(     
                         self.stored_data.get(item)["experiment"],
-                        self.stored_data.get(item)["year"], 
+                        f'[font=font/arial.ttf]{self.stored_data.get(item)["year"]}[/font]', 
                         f'[font=font/arial.ttf]{self.get_corrected_text(self.stored_data.get(item)["name"])}[/font]', 
                         item
                         ) for item in self.stored_data.keys()]
@@ -749,7 +761,7 @@ class GUIApp(MDApp):
         self.dialog.dismiss()
     
     def reset_dialog(self):
-        self.content.ids.drop_item.set_item("20XX")
+        # self.content.ids.drop_item.set_item(f'[font=font/arial.ttf]{self.get_corrected_text("السنة الدراسية")}[/font]')
         self.content.ids.drop_item_exp.set_item("....")
         self.content.ids.student_name.text = ""
         self.content.ids.student_name.str = ""
