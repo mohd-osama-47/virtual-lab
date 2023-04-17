@@ -24,9 +24,6 @@
 
 <MainScreen>:
     name:'main'
-
-    Button:
-        on_release: app.show_simple_dialog()
     
     MDGridLayout:
         pos_hint: {'center_x':0.5, 'center_y':0.47}
@@ -169,11 +166,21 @@
                     opacity: copper_exp.smoke_opacity
                     size: self.texture_size[0]//8, self.texture_size[1]//8
         
-        BasicToggleButton:
-            font_name: 'font/arial.ttf'
-            text: app.get_corrected_text("أشعل الموقد") if self.state =="normal" else app.get_corrected_text("أطفئ الموقد")
-            font_size: dp(30)
-            on_release: copper_exp.burner_on = 0 if self.state =="normal" else 1
+    BasicToggleButton:
+        pos_hint: {'x':0}
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("أشعل الموقد") if self.state =="normal" else app.get_corrected_text("أطفئ الموقد")
+        font_size: dp(30)
+        on_release: copper_exp.burner_on = 0 if self.state =="normal" else 1
+    
+    MDFillRoundFlatButton:
+        pos_hint: {'x':0.9}
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("سلم التقرير")
+        font_size: dp(30)
+        on_release: on_release: app.show_simple_dialog()
+
+        
 
 
 <LineRectangle>:
@@ -265,11 +272,19 @@
                             pointsize: 10
         
     BasicToggleButton:
+        pos_hint: {'x':0}
         font_name: 'font/arial.ttf'
         text: app.get_corrected_text("أغلق الدائرة") if self.state =="normal" else app.get_corrected_text("إفتح الدائرة")
         font_size: dp(30)
         on_release: ions_exp.current_on = 0 if self.state =="normal" else 1
         pos_x: self.parent.x + 0.7 * self.parent.width
+    
+    MDFillRoundFlatButton:
+        pos_hint: {'x':0.9}
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("سلم التقرير")
+        font_size: dp(30)
+        on_release: on_release: app.show_simple_dialog()
 
 
 <Experiment3>:
@@ -341,8 +356,16 @@
                     size: self.texture_size[0]//8, self.texture_size[1]//8
     
     BasicToggleButton:
+        pos_hint: {'x':0}
         font_name: 'font/arial.ttf'
         text: app.get_corrected_text("إبدأ تنقيط حمض الـ HCl") if self.state =="normal" else app.get_corrected_text("أوقف تنقيط حمض الـ HCl")
         font_size: dp(30)
         on_release: cl_exp.dropping_on = 0 if self.state =="normal" else 1
         pos_x: self.parent.x + 0.7 * self.parent.width
+    
+    MDFillRoundFlatButton:
+        pos_hint: {'x':0.9}
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("سلم التقرير")
+        font_size: dp(30)
+        on_release: on_release: app.show_simple_dialog()

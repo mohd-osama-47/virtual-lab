@@ -10,7 +10,7 @@
 <AText>:
     # Based on the great chunk of code from:
     # https://github.com/hosseinofj/persian_textinput_kivy/blob/master/codes
-    text: "..."
+    # text: "..."
     halign: "right"
     multiline: 0
     font_name: 'font/arial.ttf'
@@ -21,17 +21,41 @@
 <DatabaseContent>:
     orientation: "vertical"
     spacing: "12dp"
+    padding: "20dp"
     size_hint_y: None
-    height: "120dp"
+    height: "230dp"
 
+    MDLabel:
+        text: app.get_corrected_text("إسم الطالب")
+        font_name: 'font/arial.ttf'
+        halign: "right"
+        adaptive_height: True
     AText:
+        id: student_name
         line_color_focus: get_color_from_hex("#344954")
 
+    MDLabel:
+        text: app.get_corrected_text("السنة الدراسية")
+        font_name: 'font/arial.ttf'
+        halign: "right"
+        adaptive_height: True
     MDDropDownItem:
         id: drop_item
         pos_hint: {'center_x': .5, 'center_y': .5}
-        text: '2019'
+        text: '20XX'
         on_release: app.menu.open()
+    
+    MDLabel:
+        text: app.get_corrected_text("إسم التجربة")
+        font_name: 'font/arial.ttf'
+        halign: "right"
+        adaptive_height: True
+    MDDropDownItem:
+        id: drop_item_exp
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        text: "...."
+        on_release: app.menu_exp.open()
+
 
 <ContentNavigationDrawer@BoxLayout>:
     orientation: "vertical"

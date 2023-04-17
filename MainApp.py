@@ -5,7 +5,7 @@ from kivy.metrics import dp
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty, ColorProperty
+from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty, ColorProperty, ObjectProperty
 from kivy.graphics import Color, Line
 from kivy.uix.widget import Widget
 from kivy.config import Config
@@ -14,7 +14,7 @@ from kivy.uix.image import Image
 from kivy.uix.behaviors import DragBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
-from kivy.uix.textinput import TextInput
+from kivy.storage.jsonstore import JsonStore
 
 # from kivy.core.window import Window
 SCREEN_RES = [960, 540]    # Set your desired screen size here please
@@ -32,6 +32,7 @@ from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.textfield import  MDTextField
+from kivymd.uix.datatables import MDDataTable
 
 import os
 from random import randint
@@ -567,11 +568,13 @@ class GUIApp(MDApp):
     # Dict that contains all the screen names and their instances
     screen_dict = {}
     dialog = None
+    stored_data = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # self.title = "Virtual Chemsitry Lab"
         self.title = 'مختبر الكيمياء اﻹفتراضي'
+        self.stored_data = JsonStore('student_data.json')
     
     def build(self):
         self.icon = get_media_path('media/icon.png')
@@ -612,7 +615,7 @@ class GUIApp(MDApp):
                     "viewclass": "Item",
                     "text": f"{i}",
                     "height": dp(56),
-                    "on_release": lambda x=f"{i}": self.set_item(x),
+                    "on_release": lambda x=f"{i}": self.set_item(x, "date"),
                 } for i in range(2019, 2025)
         ]
 
@@ -622,10 +625,36 @@ class GUIApp(MDApp):
             position="center",
             width_mult=4,
         )
-        self.menu.bind()
 
-        # self.content.add_widget(self.menu)
-        print(self.content.ids)
+        menu_items_exp = [
+                {
+                    "viewclass": "Item",
+                    "text": "Copper Extraction",
+                    "height": dp(56),
+                    "on_release": lambda x="Copper Extraction": self.set_item(x, "exp"),
+                },
+                {
+                    "viewclass": "Item",
+                    "text": "Ions",
+                    "height": dp(56),
+                    "on_release": lambda x="Ions": self.set_item(x, "exp"),
+                },
+                {
+                    "viewclass": "Item",
+                    "text": "Chlorine Gas",
+                    "height": dp(56),
+                    "on_release": lambda x="Chlorine Gas": self.set_item(x, "exp"),
+                }
+        ]
+        self.menu_exp = MDDropdownMenu(
+            caller=self.content.ids.drop_item_exp,
+            items=menu_items_exp,
+            position="center",
+            width_mult=4,
+        )
+
+        self.menu_exp.bind()
+        self.menu.bind()
         
         self.dialog = MDDialog(
             # title=f"[font=font/arial.ttf]{app.get_corrected_text('إسم الطالب')}[/font]",
@@ -633,23 +662,28 @@ class GUIApp(MDApp):
             content_cls=self.content,
             buttons=[
                 MDFlatButton(
-                    text="NO",
+                    text=f"[font=font/arial.ttf]{app.get_corrected_text('إلغاء')}[/font]",
                     text_color=self.theme_cls.accent_color,
                     on_release=self.close_dialog
                 ),
                 MDFlatButton(
-                    text="YES",
+                    text=f"[font=font/arial.ttf]{app.get_corrected_text('سلم التقرير')}[/font]",
                     text_color = self.theme_cls.primary_color,
-                    on_release=self.show_dialog
+                    on_release=lambda x:self.get_student_report()
                 ),
             ],
+            on_pre_open=lambda x: self.reset_dialog(),
         )
 
         return self.screen
     
-    def set_item(self, text_item):
-        self.content.ids.drop_item.set_item(text_item)
-        self.menu.dismiss()
+    def set_item(self, text_item, type="date"):
+        if type == "date":
+            self.content.ids.drop_item.set_item(text_item)
+            self.menu.dismiss()
+        elif type == "exp":
+            self.content.ids.drop_item_exp.set_item(text_item)
+            self.menu_exp.dismiss()
 
     def show_simple_dialog(self):
         self.dialog.open()
@@ -659,6 +693,22 @@ class GUIApp(MDApp):
     
     def close_dialog(self, inst):
         self.dialog.dismiss()
+    
+    def reset_dialog(self):
+        self.content.ids.drop_item.set_item("20XX")
+        self.content.ids.drop_item_exp.set_item("....")
+        self.content.ids.student_name.text = ""
+        self.content.ids.student_name.str = ""
+
+    def get_student_report(self):
+        name = self.content.ids.student_name.text
+        year = self.content.ids.drop_item.current_item
+        experiment = self.content.ids.drop_item_exp.current_item
+        if len(name) < 1 or experiment == "...." or year == "20XX":
+            return
+        self.stored_data.put(self.stored_data.count()+1, name=name, year=year, experiment=experiment)
+        self.close_dialog(self.dialog)
+        # print(f"STUDENT NAME: {name}, YEAR: {year}, EXP: {experiment}")
 
     def switch_screen(self, instance_navigation_rail_item, screen_name):
         '''
