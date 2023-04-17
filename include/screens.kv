@@ -93,6 +93,12 @@
         size_hint_y: None
         size: self.texture_size[0] * 0.3, self.texture_size[1] * 0.3
     
+    MDFillRoundFlatButton:
+        pos_hint: {'x':0}
+        font_name: 'font/arial.ttf'
+        text: app.get_corrected_text("سجل الطلاب")
+        font_size: dp(30)
+        on_release: on_release: app.show_student_table_menu()
 
 <Experiment1>:
     name: 'experiment1'

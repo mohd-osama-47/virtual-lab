@@ -15,6 +15,7 @@ from kivy.uix.behaviors import DragBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
 from kivy.storage.jsonstore import JsonStore
+from kivy.uix.modalview import ModalView
 
 # from kivy.core.window import Window
 SCREEN_RES = [960, 540]    # Set your desired screen size here please
@@ -568,13 +569,33 @@ class GUIApp(MDApp):
     # Dict that contains all the screen names and their instances
     screen_dict = {}
     dialog = None
-    stored_data = ObjectProperty(None)
+    stored_data = ObjectProperty(JsonStore('student_data.json'))
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # self.title = "Virtual Chemsitry Lab"
         self.title = 'مختبر الكيمياء اﻹفتراضي'
-        self.stored_data = JsonStore('student_data.json')
+        self.data_table = MDDataTable(
+            # MDDataTable allows the use of size_hint
+            size_hint=(0.8, 0.8),
+            use_pagination=True,
+            pagination_menu_pos='auto',
+            rows_num=5,
+            pagination_menu_height = '300dp',
+            column_data=[
+                (f'[font=font/arial.ttf]{self.get_corrected_text("إسم التجربة")}[/font]', dp(30)),
+                (f'[font=font/arial.ttf]{self.get_corrected_text("السنة الدراسية")}[/font]', dp(30)),
+                (f'[font=font/arial.ttf]{self.get_corrected_text("إسم الطالب")}[/font]', dp(30)),
+                (f'[font=font/arial.ttf]{self.get_corrected_text("الرقم التسلسلي")}[/font]', dp(30)),
+            ],
+            row_data=[(
+                        self.stored_data.get(item)["experiment"],
+                        self.stored_data.get(item)["year"], 
+                        f'[font=font/arial.ttf]{self.get_corrected_text(self.stored_data.get(item)["name"])}[/font]', 
+                        item
+                        ) for item in self.stored_data.keys()],
+            elevation=2,
+            )
     
     def build(self):
         self.icon = get_media_path('media/icon.png')
@@ -608,8 +629,17 @@ class GUIApp(MDApp):
         self.screen_dict["experiment2"] = self.experiment2
         self.experiment3 = self.sm.get_screen('experiment3')
         self.screen_dict["experiment3"] = self.experiment3
-
         self.content = DatabaseContent()
+
+        self.student_data_table = ModalView()
+        self.student_data_table.background = get_media_path("media/ModalViewBG.png")
+        self.student_data_table.bg_color = [0,0,0,0]
+        self.student_data_table.pos_hint = {'center_x':0.5,'center_y':0.5}
+        self.student_data_table.size_hint = [0.7, 0.6]
+        self.student_data_table.value_transparent = [0,0,0,0]
+        self.student_data_table.add_widget(self.data_table)
+        # self.student_data_table.auto_dismiss = True
+
         menu_items = [
                 {
                     "viewclass": "Item",
@@ -677,6 +707,30 @@ class GUIApp(MDApp):
 
         return self.screen
     
+    def animate_in(self, instance, hint_x= 0.93, hint_y = 0.95, anim_type= 'out_back', duration=0.2):
+        # create an animation object. 
+        animation =  Animation(size_hint_x=hint_x + 0.01, size_hint_y=hint_y + 0.01, t=anim_type, duration = duration, step = 1/30) + Animation(size_hint_x=hint_x, size_hint_y=hint_y, t=anim_type, duration = duration, step = 1/30)
+        
+        animation.start(instance)
+
+    def show_student_table_menu(self):
+        # Reset widget position for animation to work
+        # self.data_table.size_hint_x=1.0
+        # self.data_table.size_hint_y=1.0
+        # self.data_table.fitz_vision_active = True
+        # Open the bottom sheet with animation 
+        self.student_data_table.open()
+        # self.animate_in(self.data_table)
+
+    def update_row_data(self, *args):
+        row_data=[(     
+                        self.stored_data.get(item)["experiment"],
+                        self.stored_data.get(item)["year"], 
+                        f'[font=font/arial.ttf]{self.get_corrected_text(self.stored_data.get(item)["name"])}[/font]', 
+                        item
+                        ) for item in self.stored_data.keys()]
+        self.data_table.row_data = row_data
+
     def set_item(self, text_item, type="date"):
         if type == "date":
             self.content.ids.drop_item.set_item(text_item)
@@ -701,12 +755,13 @@ class GUIApp(MDApp):
         self.content.ids.student_name.str = ""
 
     def get_student_report(self):
-        name = self.content.ids.student_name.text
+        name = self.content.ids.student_name.str
         year = self.content.ids.drop_item.current_item
         experiment = self.content.ids.drop_item_exp.current_item
         if len(name) < 1 or experiment == "...." or year == "20XX":
             return
         self.stored_data.put(self.stored_data.count()+1, name=name, year=year, experiment=experiment)
+        Clock.schedule_once(self.update_row_data, 0)
         self.close_dialog(self.dialog)
         # print(f"STUDENT NAME: {name}, YEAR: {year}, EXP: {experiment}")
 
