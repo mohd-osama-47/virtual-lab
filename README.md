@@ -12,7 +12,7 @@
 <h3 align="center">مختبر الكيمياء الإفتراضي</h3>
 
   <p align="center">
-    Quick protoype of a Kivy & KivyMD based GUI for aiding in chemsitry lessons.
+    Prototype of a Kivy & KivyMD based GUI for aiding in chemsitry lab sessions
   </p>
 </div>
 
@@ -29,7 +29,8 @@
       <a href="#getting-started">Getting Started</a>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#gallery">Gallery</a></li>
   </ol>
 </details>
 
@@ -40,7 +41,7 @@
 
 ![prototype sample image](./media/SamplePic.png)
 
-Basic prototype to showcase what can be achieved with Kivy in the context of virtual labs and experiements. Initial developments were done in an Ubuntu 20.04 installation, but Kivy is cross platform so installations in windows or any other OS should be similar
+Prototype to showcase what can be achieved with Kivy in the context of virtual labs and experiements. Initial developments were done in an Ubuntu 20.04 installation, but Kivy is cross platform so installations in windows or any other OS should be similar
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -65,14 +66,29 @@ Run ```MainApp.py``` using python after everything is installed and the GUI shou
 
 
 
-<!-- ROADMAP -->
-## Roadmap
+## Features
+The applications contains **three** main experiments that each represent a different year in a traditional high-school system.
 
-- [ ] TBD
-- [ ] TBD
-- [ ] TBD
-    - [ ] TBD
+The three experiments are:
+- Copper Extraction
+- Ions
+- Chlorine Gas
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+The application also allows for the student to submit a basic report contianting the student's name, academic year, and experiment currently attempted by them.
+A teacher can access a table of all submitted reports from a dedicated button in the main menu. The table is shown in a widget that allows for scrolling.
 
 
+## Gallery
+The following are different sample animations showing the different functionality of the application:
+
+- Copper Extraction Experiment
+![Copper Extraction](./media/CopperSample.gif)
+
+- Ions Experiment
+![Ions](./media/IonSample.gif)
+
+- Chlorine Gas Experiment
+![Chlorine Gas](./media/ChlorineGasSample.gif)
+
+- Student reports system
+![Reporting System](./media/ReportsSample.gif)
