@@ -645,19 +645,19 @@ class GUIApp(MDApp):
                     "viewclass": "Item",
                     "text":f"[font=font/arial.ttf]{app.get_corrected_text('الأولى')}[/font]",
                     "height": dp(56),
-                    "on_release": lambda x=app.get_corrected_text('الأولى'): self.set_item(x),
+                    "on_release": lambda x="1": self.set_item(x),
                 },
                 {
                     "viewclass": "Item",
                     "text":f"[font=font/arial.ttf]{app.get_corrected_text('الثانية')}[/font]",
                     "height": dp(56),
-                    "on_release": lambda x=app.get_corrected_text('الثانية'): self.set_item(x),
+                    "on_release": lambda x="2": self.set_item(x),
                 },
                 {
                     "viewclass": "Item",
                     "text":f"[font=font/arial.ttf]{app.get_corrected_text('الثالثة')}[/font]",
                     "height": dp(56),
-                    "on_release": lambda x=app.get_corrected_text('الثالثة'): self.set_item(x),
+                    "on_release": lambda x="3": self.set_item(x),
                 }
         ]
 
@@ -763,6 +763,7 @@ class GUIApp(MDApp):
     def reset_dialog(self):
         # self.content.ids.drop_item.set_item(f'[font=font/arial.ttf]{self.get_corrected_text("السنة الدراسية")}[/font]')
         self.content.ids.drop_item_exp.set_item("....")
+        self.content.ids.drop_item.set_item("....")
         self.content.ids.student_name.text = ""
         self.content.ids.student_name.str = ""
 
@@ -770,7 +771,7 @@ class GUIApp(MDApp):
         name = self.content.ids.student_name.str
         year = self.content.ids.drop_item.current_item
         experiment = self.content.ids.drop_item_exp.current_item
-        if len(name) < 1 or experiment == "...." or year == "20XX":
+        if len(name) < 1 or experiment == "...." or year == "....":
             return
         self.stored_data.put(self.stored_data.count()+1, name=name, year=year, experiment=experiment)
         Clock.schedule_once(self.update_row_data, 0)
