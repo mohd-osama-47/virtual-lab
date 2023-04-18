@@ -64,7 +64,7 @@ python3 -m pip install -r requirements.txt
 
 Run ```MainApp.py``` using python after everything is installed and the GUI should be up and running.
 
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Features
 The applications contains **three** main experiments that each represent a different year in a traditional high-school system.
@@ -77,6 +77,7 @@ The three experiments are:
 The application also allows for the student to submit a basic report contianting the student's name, academic year, and experiment currently attempted by them.
 A teacher can access a table of all submitted reports from a dedicated button in the main menu. The table is shown in a widget that allows for scrolling.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Gallery
 The following are different sample animations showing the different functionality of the application:
@@ -96,3 +97,5 @@ The following are different sample animations showing the different functionalit
 - Student reports system
 
 ![Reporting System](./media/ReportsSample.gif)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
