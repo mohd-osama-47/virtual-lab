@@ -82,13 +82,17 @@ A teacher can access a table of all submitted reports from a dedicated button in
 The following are different sample animations showing the different functionality of the application:
 
 - Copper Extraction Experiment
+
 ![Copper Extraction](./media/CopperSample.gif)
 
 - Ions Experiment
+
 ![Ions](./media/IonSample.gif)
 
 - Chlorine Gas Experiment
+
 ![Chlorine Gas](./media/ChlorineGasSample.gif)
 
 - Student reports system
+
 ![Reporting System](./media/ReportsSample.gif)
